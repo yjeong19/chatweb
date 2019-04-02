@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link, Route, BrowserRouter as Router } from 'react-router-dom';
 import Dashboard from './views/dashboard';
 import LoginPage from './views/login';
+import PrivateRoute from './components/privateRoute';
 import './App.css';
 
 
@@ -16,17 +17,19 @@ class App extends Component {
     }
   }
 
+
    
   render() {
     return (
     <Router>
       <div className="App" >
        <Route exact path='/' component={LoginPage}/>
-       <Route exapct path='/chat' component={Dashboard}/>
+       <PrivateRoute exact path='/chat' component={Dashboard}/>
       </div>
     </Router>
     );
   }
 }
+
 
 export default App;

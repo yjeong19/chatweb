@@ -61,7 +61,7 @@ export const postMessage = (payload) => {
 
 export const createChat = (payload) => {
   console.log(payload);
-  return fetch(`${url}/createChat?user_id=${payload.user_id}`, {
+  return fetch(`${url}/createChat?user_id=${payload.user_id}&username=${payload.username}&currentUser=${payload.currentUser}&current_id=${payload.current_id}`, {
     method: 'GET', 
     headers: {
       Accept: 'application/json',

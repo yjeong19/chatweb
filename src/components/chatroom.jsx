@@ -29,19 +29,16 @@ class Chatroom extends Component {
     this.handleText = this.handleText.bind(this);
     this.onMsgReceived = this.onMsgReceived.bind(this);
     this.checkIfRoomUpdated = this.checkIfRoomUpdated.bind(this);
-    this.test = this.test.bind(this);
+    this.loadMessages = this.loadMessages.bind(this);
     //socket
     this.socket = socketIO(`http://localhost:8080/`);
     this.socket.on('message', this.onMsgReceived);
   }
-  test(msg){
-    console.log(msg);
-  }
+  
   componentDidMount(){
-    // this.loadMessages();
-    // this.setState({room: this.props.selectedRoom.selected._id})
+    console.log(this.props);
     this.scrollToBottom();
-    console.log('when does this get called')
+    this.loadMessages();    
   }
   
   componentDidUpdate(){
@@ -51,8 +48,9 @@ class Chatroom extends Component {
 
   async checkIfRoomUpdated(){
     if(this.state.room !== this.props.selectedRoom.selected._id){
+      console.log('updating room info')
+      this.loadMessages();
       let oldRoom = this.state.room;
-      // oldRoom !== null ? this.socket.emit('leaveRoom', oldRoom) : null;
       this.socket.emit('leaveRoom', oldRoom);
       await this.setState({room: this.props.selectedRoom.selected._id})
       this.socket.emit('joinRoom', this.state.room);
@@ -69,23 +67,30 @@ class Chatroom extends Component {
     })
   }
 
+  loadMessages(){
+    getMessages(this.props.selectedRoom.selected._id)
+      .then(res => res.json())
+      .then(data => {
+          this.props.loadMessages(data.messages)
+      })
+      .catch(err => console.log(err));
+  }
+
   _sendText(message){
-      //sending object of message:
-      //send user id later
-    this.socket.emit('message', {message: this.state.message, room_id: this.state.room, username: 'web'});
-    this.props.addMessage([{message: this.state.message, room_id: this.state.room, username: 'web'}])
+    this.socket.emit('message', {message: this.state.message, room_id: this.state.room, username: this.props.loginReducer.username});
+    this.props.addMessage([{message: this.state.message, room_id: this.state.room, user: [this.props.loginReducer.username]}])
     this.setState({receivedMsg: this.state.receivedMsg.concat(this.state.message)})
     this.setState({message: ''})
   }
 
   onMsgReceived(message){
     // this.setState({receivedMsg: this.state.receivedMsg.concat(message[0])});
-    console.log(message);
     this.props.addMessage(message);
   }
 
   renderMsg(){
     return(this.props.messages.map((msg, i) => {
+      console.log(msg);
       return (
         <ListItem>
           <h1>{msg.message}</h1>
@@ -109,7 +114,7 @@ class Chatroom extends Component {
         <div className='textArea_container'>
           <TextField
             id="outlined-textarea"
-            label="make this username???"
+            label="Message"
             placeholder="Message"
             className={classes.textField}
             value={this.state.message}
@@ -118,7 +123,6 @@ class Chatroom extends Component {
             onKeyPress={e => e.key === 'Enter' ? this._sendText() : null}
             />
         </div>
-        <button onClick={this.loadMessages}>add</button>
       </div>
     );
   }
@@ -133,6 +137,7 @@ const mapStateToProps = ((state, ownProps) => {
     return {
         selectedRoom: state.chatroomReducer,
         messages: state.messageReducer,
+        loginReducer: state.loginReducer,
     }
 })
 

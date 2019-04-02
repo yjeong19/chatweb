@@ -4,8 +4,13 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
-import { login } from '../controller/login';
+import { login, register } from '../controller/login';
 import { Link } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import * as actions from '../redux/actions';
+
+
 const Cookies = require('js-cookie');
 
 class LoginPage extends Component {
@@ -21,6 +26,7 @@ class LoginPage extends Component {
 
         //bind events
         this.handleLogin = this.handleLogin.bind(this);
+        this.handleRegister = this.handleRegister.bind(this);
     }
 
     handleLogin(){
@@ -33,9 +39,11 @@ class LoginPage extends Component {
                     Cookies.remove('token');
                     Cookies.set('user_id', res.payload.id, { expires:1 });
                     Cookies.set('token', res.token, { expires: 1 });
+                    this.props.addLogin(res);
                 }else{
                     //if fail dont log in --- make this private route later
                     console.log('fail');
+                    alert('fail');
                 }
             })
             .catch(err => console.log(err));
@@ -45,13 +53,26 @@ class LoginPage extends Component {
         this.setState({[e.target.id]: e.target.value})
     }
 
+    handleRegister(){
+        register({username: this.state.username, password: this.state.password, password2: this.state.password2})
+            .then(data => data.json())
+            .then(res => {
+                Cookies.remove('user_id');
+                Cookies.remove('token');
+                Cookies.set('user_id', res.payload.id, { expires:1 });
+                Cookies.set('token', res.token, { expires: 1 });
+                this.props.addLogin(res);
+            })
+            .catch(err => console.log(err));
+    }
+
     renderSignUp(){
         const { classes } = this.props;
         return(
         <FormControl>
             <TextField 
                 required
-                id='register_user'
+                id='username'
                 label='Username'
                 placeholder='username'
                 margin='normal'
@@ -65,6 +86,7 @@ class LoginPage extends Component {
                 placeholder='password'
                 margin='normal'
                 variant='outlined'
+                type='password'
                 onChange={(e) => this.handleInput(e)}
             />
             <TextField 
@@ -74,6 +96,7 @@ class LoginPage extends Component {
                 placeholder='re-enter your password'
                 margin='normal'
                 variant='outlined'
+                type='password'
                 onChange={(e) => this.handleInput(e)}
             />
             <div className={styles.buttonContainer}>
@@ -83,12 +106,15 @@ class LoginPage extends Component {
                 >
                     Login
                 </Button>
+                <Link to='/chat' >
                 <Button
                     className={classes.loginButton}
                     variant='contained'
+                    onClick={this.handleRegister}
                 >
                     Register
                 </Button>
+                </Link>
             </div>
         </FormControl>
         )
@@ -114,6 +140,7 @@ class LoginPage extends Component {
                 placeholder='Password'
                 margin="normal"
                 variant="outlined"
+                type='password'
                 onChange={(e) => this.handleInput(e)}
             />
             <div className={styles.buttonContainer}>
@@ -140,7 +167,7 @@ class LoginPage extends Component {
     render(){
         const { classes } = this.props;
         return(
-            <Paper className={classes.paper}>
+            <Paper className={classes.paper} elevation4>
                 {this.state.reg_or_login === 'login' ? this.renderLogin() : this.renderSignUp()}
             </Paper>
         )
@@ -152,8 +179,8 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         color: 'red',
-        backgroundColor: 'red',
-        margin: '25%'
+        backgroundColor: '#3f51b5',
+        margin: '25%',
     },
     loginButton: {
         marginBottom: '2%'
@@ -165,4 +192,17 @@ const styles = {
     }
 }
 
-export default withStyles(styles)(LoginPage);
+const mapStateToProps = ((state, ownProps) => {
+    return {
+        login: state.loginReducer
+    }
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    addLogin: (payload) => dispatch(actions.addLogin(payload)),
+})
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(withStyles(styles)(LoginPage));

@@ -1,2 +1,3 @@
-export { addSelectedRoom, loadRooms } from './addChatrooms';
+export { addSelectedRoom, loadRooms, addNewRoom } from './addChatrooms';
 export { loadMessages, addMessage } from './addMessage';
+export { addLogin } from './addLogin';

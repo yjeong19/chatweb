@@ -19,6 +19,7 @@ import mainListItems from '../components/dashItems';
 import * as actions from '../redux/actions';
 import { connect } from 'react-redux';
 import Chatroom from '../components/chatroom';
+import FormDialog from '../components/addUser';
 const Cookies = require('js-cookie');
 
 
@@ -62,6 +63,7 @@ const styles = theme => ({
   },
   title: {
     flexGrow: 1,
+    font: "'Heebo', sans-serif",
   },
   drawerPaper: {
     position: 'relative',
@@ -103,6 +105,9 @@ const styles = theme => ({
     maxHeight: '100%',
     overflow: 'auto',
     height: 600,
+  },
+  newChat: {
+    color: 'white',
   }
 });
 
@@ -118,10 +123,22 @@ class Dashboard extends React.Component {
     // this.socket = socketIO(`http://localhost:8080/`);
     // this.socket.on('message', this.onMsgReceived);
     // this.socket.emit('joinRoom', this.state.selected);
+
+    //bind 
+    this.newRoomHandler = this.newRoomHandler.bind(this);
 }
 
   componentDidMount(){
     this.getRooms();
+  }
+
+  componentDidUpdate(){
+    console.log(this.props.selectedRoom.selected.users ? this.props.selectedRoom.selected.users[0].username : 'hello')
+    this.checkIfRoomUpdated();
+  }
+
+  newRoomHandler(room_id){
+    this.setState({selected: room_id})
   }
 
   getRooms(){
@@ -134,40 +151,24 @@ class Dashboard extends React.Component {
       .catch(err => console.log(err));
   }
 
-  renderUserList(){
-    return( 
-    <div>{
-      this.props.rooms.map((room,i) => {
-        return <span onClick={async ()=> {
-          console.log(room);
-          await this.props.addSelectedRoom(room);
-          this.setState({selected: room.room_id})
-          this.loadMessages();
-          // this.socket.emit('joinRoom', room._id);
-        }}>{mainListItems(room)}</span>
-      })
-    }</div>
-    )
+  async checkIfRoomUpdated(){
+    if(this.state.selected !== this.props.selectedRoom.selected._id){
+      await this.setState({selected: this.props.selectedRoom.selected._id})
+    }
   }
 
-  // getRooms(){
-  //   getAllRooms()
-  //       .then(data => data.json())
-  //       .then(data_json => {
-  //           // this.setState({rooms: [...data_json]})
-  //           this.props.loadRooms(data_json);
-  //       })
-  // }
-
-  loadMessages(){
-    console.log('line 163 selected room ',this.props.selectedRoom.selected)
-    getMessages(this.props.selectedRoom.selected._id)
-      .then(res => res.json())
-      .then(data => {
-          console.log('line 93 loading messages', data);
-          this.props.loadMessages(data.messages)
-      })
-      .catch(err => console.log(err));
+  //this renders list of rooms on the left panel
+  renderUserList(){
+    return( 
+      <div>{
+        this.props.rooms.map((room,i) => {
+          console.log(room);
+          return <span onClick={async ()=> {
+            await this.props.addSelectedRoom(room);
+          }}>{mainListItems(room, this.props.loginReducer.username)}</span>
+        })
+      }</div>
+    )
   }
 
   handleDrawerOpen = () => {
@@ -177,6 +178,19 @@ class Dashboard extends React.Component {
   handleDrawerClose = () => {
     this.setState({ open: false });
   };
+
+  displayChatUser(){
+    if(this.props.selectedRoom.selected.owner && this.props.loginReducer.username !== ''){
+      // this.props.loginReducer.username == this.props.selectedRoom.selected.owner.username ? this.props.selectedRoom.selected.users[1].username : this.props.selectedRoom.selected.users[0].username
+      if(this.props.loginReducer.username === this.props.selectedRoom.selected.owner.username) {
+        return this.props.selectedRoom.selected.users[1].username;
+      }else {
+        return this.props.selectedRoom.selected.users[0].username;
+      }
+    }else {
+      return 'No User'
+    }
+  }
 
   render() {
     const { classes } = this.props;
@@ -207,13 +221,18 @@ class Dashboard extends React.Component {
               noWrap
               className={classes.title}
             >
-              Dashboard
+              {this.props.loginReducer.username}
             </Typography>
             <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
               {/* this is to add create new chat */}
-                <NotificationsIcon onClick={() => createChat({user_id: Cookies.get('user_id')})}/>
-              </Badge>
+                <FormDialog
+                className={classes.newChat} 
+                selectedReducer={this.props.addSelectedRoom}
+                addNewRoom={this.props.addNewRoom}
+                newRoomHandler={this.newRoomHandler}
+                currentUser={this.props.loginReducer.username}
+                current_id={this.props.loginReducer.id}
+                />
             </IconButton>
           </Toolbar>
         </AppBar>
@@ -239,7 +258,8 @@ class Dashboard extends React.Component {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Typography variant="h4" gutterBottom component="h2">
-            MAKE THIS THE PERSON THE CHAT IS TO
+          {/* this displays user the chat is too */}
+            To: {this.displayChatUser()}
           </Typography>
           <Typography component="div" className={classes.chartContainer}>
             {this.state.selected ? <Chatroom room={this.state.selected}/> : null}
@@ -258,6 +278,7 @@ const mapDispatchToProps = (dispatch) => ({
   loadMessages: (payload) => dispatch(actions.loadMessages(payload)),
   loadRooms: (payload) => dispatch(actions.loadRooms(payload)),
   addSelectedRoom: (payload) => dispatch(actions.addSelectedRoom(payload)),
+  addNewRoom: (payload) => dispatch(actions.addNewRoom(payload)),
 });
 
 const mapStateToProps = ((state, ownProps) => {
@@ -265,6 +286,7 @@ const mapStateToProps = ((state, ownProps) => {
     rooms: state.chatroomReducer.rooms,
     selectedRoom: state.chatroomReducer,
     messages: state.messageReducer,
+    loginReducer: state.loginReducer,
   }
 })
 

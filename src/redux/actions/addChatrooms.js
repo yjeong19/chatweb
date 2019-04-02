@@ -1,6 +1,7 @@
 import { 
     SELECTED_ROOM,
-    LOAD_ROOMS
+    LOAD_ROOMS,
+    ADD_NEW_ROOM,
 } from '../constants';
 
 const addSelectedRoom = (payload) => {
@@ -18,4 +19,12 @@ const loadRooms = (payload) => {
     }
 }
 
-export { addSelectedRoom, loadRooms };
+const addNewRoom = (payload) => {
+    console.log(payload);
+    return {
+        type: ADD_NEW_ROOM,
+        payload,
+    }
+}
+
+export { addSelectedRoom, loadRooms, addNewRoom };

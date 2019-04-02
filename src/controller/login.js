@@ -24,3 +24,19 @@ export const login = (info) => {
     })
   })
 };
+
+export const register = (info) => {
+  const { username, password, password2 } = info;
+  return fetch(`${url}/register`, {
+    method: 'POST', 
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      username, 
+      password,
+      password2,
+    })
+  })
+};
