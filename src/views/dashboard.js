@@ -10,16 +10,16 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import { getAllRooms, getMessages, createChat, getUserRooms } from '../controller/chatroom';
 import mainListItems from '../components/dashItems';
 import * as actions from '../redux/actions';
 import { connect } from 'react-redux';
 import Chatroom from '../components/chatroom';
 import FormDialog from '../components/addUser';
+import socketIO from 'socket.io-client';
+
 const Cookies = require('js-cookie');
 
 
@@ -119,21 +119,33 @@ class Dashboard extends React.Component {
         rooms: [{username: 'testing'}],
         selected: '',
     };
-
-    // this.socket = socketIO(`http://localhost:8080/`);
-    // this.socket.on('message', this.onMsgReceived);
-    // this.socket.emit('joinRoom', this.state.selected);
-
     //bind 
     this.newRoomHandler = this.newRoomHandler.bind(this);
+    this._sendNewRoom = this._sendNewRoom.bind(this);
+    this._onNewChat = this._onNewChat.bind(this);
+
+    this.socket = socketIO(`http://localhost:8080/`);
+    // this.socket.on('message', this.onMsgReceived);
+    this.socket.emit('chatList', this.props.loginReducer.username);
+    this.socket.on('newChat', this._onNewChat)
 }
+
+  // need something to handle new room and send to server
+  _sendNewRoom(room){
+    this.socket.emit('newChat', (room));
+    this.props.addNewRoom(room);
+  }
+  //need something to handle server sending new room info
+  _onNewChat(room){
+    this.props.addNewRoom(room);
+  }
 
   componentDidMount(){
     this.getRooms();
   }
 
   componentDidUpdate(){
-    console.log(this.props.selectedRoom.selected.users ? this.props.selectedRoom.selected.users[0].username : 'hello')
+    // console.log(this.props);
     this.checkIfRoomUpdated();
   }
 
@@ -162,7 +174,7 @@ class Dashboard extends React.Component {
     return( 
       <div>{
         this.props.rooms.map((room,i) => {
-          console.log(room);
+          // console.log(room);
           return <span onClick={async ()=> {
             await this.props.addSelectedRoom(room);
           }}>{mainListItems(room, this.props.loginReducer.username)}</span>
@@ -228,7 +240,7 @@ class Dashboard extends React.Component {
                 <FormDialog
                 className={classes.newChat} 
                 selectedReducer={this.props.addSelectedRoom}
-                addNewRoom={this.props.addNewRoom}
+                addNewRoom={this._sendNewRoom}
                 newRoomHandler={this.newRoomHandler}
                 currentUser={this.props.loginReducer.username}
                 current_id={this.props.loginReducer.id}

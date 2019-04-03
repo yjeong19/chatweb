@@ -20,7 +20,7 @@ const loadRooms = (payload) => {
 }
 
 const addNewRoom = (payload) => {
-    console.log(payload);
+    console.log('add NEW ROOM ACTIVATED')
     return {
         type: ADD_NEW_ROOM,
         payload,

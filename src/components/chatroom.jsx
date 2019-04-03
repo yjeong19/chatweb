@@ -31,12 +31,13 @@ class Chatroom extends Component {
     this.checkIfRoomUpdated = this.checkIfRoomUpdated.bind(this);
     this.loadMessages = this.loadMessages.bind(this);
     //socket
-    this.socket = socketIO(`http://localhost:8080/`);
+    // this.socket = socketIO(`http://chatweb-chatweb.7e14.starter-us-west-2.openshiftapps.com`);
+    this.socket=socketIO('http://localhost:8080')
     this.socket.on('message', this.onMsgReceived);
   }
   
   componentDidMount(){
-    console.log(this.props);
+    // console.log(this.props);
     this.scrollToBottom();
     this.loadMessages();    
   }
@@ -48,7 +49,7 @@ class Chatroom extends Component {
 
   async checkIfRoomUpdated(){
     if(this.state.room !== this.props.selectedRoom.selected._id){
-      console.log('updating room info')
+      // console.log('updating room info')
       this.loadMessages();
       let oldRoom = this.state.room;
       this.socket.emit('leaveRoom', oldRoom);
@@ -90,7 +91,7 @@ class Chatroom extends Component {
 
   renderMsg(){
     return(this.props.messages.map((msg, i) => {
-      console.log(msg);
+      // console.log(msg);
       return (
         <ListItem>
           <h1>{msg.message}</h1>
