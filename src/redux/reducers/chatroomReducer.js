@@ -17,7 +17,6 @@ import {
           rooms: [...action.payload],
         }
       case SELECTED_ROOM:
-        console.log('this rooms selected, line 20 chatroom reducer')
         return {
             ...state, 
             selected: { 
@@ -27,7 +26,6 @@ import {
             },
         };
       case ADD_NEW_ROOM:
-        console.log(action.payload);
         return {
           ...state,
           rooms: [...state.rooms, action.payload]

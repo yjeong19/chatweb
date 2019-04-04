@@ -8,7 +8,6 @@ const messageReducer = (state = initialState, action) => {
       return [...action.payload];
       break;
     case ADD_MESSAGE:
-      console.log(action.payload);
       return [...state, ...action.payload];
     default:
       return state;

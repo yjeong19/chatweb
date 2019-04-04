@@ -32,7 +32,6 @@ function FormDialog(props) {
             if(typeof(data) == 'string'){
                 alert(data);
             }
-            console.log(data, username);
             props.selectedReducer(data);
             props.addNewRoom(data);
             props.newRoomHandler(data._id);

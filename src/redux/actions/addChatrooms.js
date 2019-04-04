@@ -12,7 +12,6 @@ const addSelectedRoom = (payload) => {
 };
 
 const loadRooms = (payload) => {
-    console.log(payload);
     return {
         type: LOAD_ROOMS,
         payload
@@ -20,7 +19,6 @@ const loadRooms = (payload) => {
 }
 
 const addNewRoom = (payload) => {
-    console.log('add NEW ROOM ACTIVATED')
     return {
         type: ADD_NEW_ROOM,
         payload,

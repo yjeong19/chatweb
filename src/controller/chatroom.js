@@ -1,5 +1,5 @@
-// const url = 'http://localhost:8080';
-const url = 'https://secure-chatweb.7e14.starter-us-west-2.openshiftapps.com';
+const url = 'http://localhost:8080';
+// const url = 'https://secure-chatweb.7e14.starter-us-west-2.openshiftapps.com';
 
 export const getAllRooms = () => {
     return fetch(`${url}/room`, {
@@ -22,7 +22,6 @@ export const getUserRooms = (user_id) => {
 };
 
 export const joinChat = (payload) => {
-  console.log(payload);
   return fetch(`${url}/joinChat`, {
     method: 'PUT',
     headers: {
@@ -61,7 +60,6 @@ export const postMessage = (payload) => {
 };
 
 export const createChat = (payload) => {
-  console.log(payload);
   return fetch(`${url}/createChat?user_id=${payload.user_id}&username=${payload.username}&currentUser=${payload.currentUser}&current_id=${payload.current_id}`, {
     method: 'GET', 
     headers: {

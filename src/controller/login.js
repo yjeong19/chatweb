@@ -2,8 +2,8 @@
 
 
 //localhost. dev server
-// const url = 'http://localhost:8080';
-const url = 'https://secure-chatweb.7e14.starter-us-west-2.openshiftapps.com';
+const url = 'http://localhost:8080';
+// const url = 'https://secure-chatweb.7e14.starter-us-west-2.openshiftapps.com';
 
 
 
@@ -13,7 +13,6 @@ export const testing = (payload) => {
 
 export const login = (info) => {
   const { username, password } = info;
-  console.log(username, password)
   return fetch(`${url}/login`, {
     method: 'POST',
     headers: {
