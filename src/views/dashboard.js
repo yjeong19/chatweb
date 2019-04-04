@@ -19,6 +19,7 @@ import { connect } from 'react-redux';
 import Chatroom from '../components/chatroom';
 import FormDialog from '../components/addUser';
 import socketIO from 'socket.io-client';
+import { Redirect } from 'react-router-dom';
 
 const Cookies = require('js-cookie');
 
@@ -124,7 +125,8 @@ class Dashboard extends React.Component {
     this._sendNewRoom = this._sendNewRoom.bind(this);
     this._onNewChat = this._onNewChat.bind(this);
 
-    this.socket = socketIO(`http://localhost:8080/`);
+    // this.socket = socketIO(`http://localhost:8080/`);
+    this.socket = socketIO('http://chatweb-chatweb.7e14.starter-us-west-2.openshiftapps.com/');
     // this.socket.on('message', this.onMsgReceived);
     this.socket.emit('chatList', this.props.loginReducer.username);
     this.socket.on('newChat', this._onNewChat)
@@ -181,6 +183,23 @@ class Dashboard extends React.Component {
         })
       }</div>
     )
+  }
+
+  logout(){
+    Cookies.set('user_id', '');
+    Cookies.set('token', '');
+    Cookies.set('username', '');
+    // this.props.addAuth(Cookies.get('isAuth'));
+      // let path = `/`;
+      // this.props.history.push(path);
+    this.props.addLogin({
+      payload: {
+        id: '',
+        username: '',
+      },
+      success: false,
+      token: '',
+    })
   }
 
   handleDrawerOpen = () => {
@@ -246,6 +265,7 @@ class Dashboard extends React.Component {
                 current_id={this.props.loginReducer.id}
                 />
             </IconButton>
+            <IconButton onClick={() => this.logout()}>Logout</IconButton>
           </Toolbar>
         </AppBar>
         <Drawer
@@ -291,6 +311,7 @@ const mapDispatchToProps = (dispatch) => ({
   loadRooms: (payload) => dispatch(actions.loadRooms(payload)),
   addSelectedRoom: (payload) => dispatch(actions.addSelectedRoom(payload)),
   addNewRoom: (payload) => dispatch(actions.addNewRoom(payload)),
+  addLogin: (payload) => dispatch(actions.addLogin(payload)),
 });
 
 const mapStateToProps = ((state, ownProps) => {

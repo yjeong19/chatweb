@@ -31,8 +31,8 @@ class Chatroom extends Component {
     this.checkIfRoomUpdated = this.checkIfRoomUpdated.bind(this);
     this.loadMessages = this.loadMessages.bind(this);
     //socket
-    // this.socket = socketIO(`http://chatweb-chatweb.7e14.starter-us-west-2.openshiftapps.com`);
-    this.socket=socketIO('http://localhost:8080')
+    this.socket = socketIO(`http://chatweb-chatweb.7e14.starter-us-west-2.openshiftapps.com`);
+    // this.socket=socketIO('http://localhost:8080')
     this.socket.on('message', this.onMsgReceived);
   }
   

@@ -2,8 +2,8 @@
 
 
 //localhost. dev server
-const url = 'http://localhost:8080';
-// const url = 'http://chatweb-chatweb.7e14.starter-us-west-2.openshiftapps.com';
+// const url = 'http://localhost:8080';
+const url = 'http://chatweb-chatweb.7e14.starter-us-west-2.openshiftapps.com';
 
 
 
