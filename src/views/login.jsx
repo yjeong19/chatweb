@@ -33,7 +33,7 @@ class LoginPage extends Component {
         login({username: this.state.username, password: this.state.password})
             .then(data => data.json())
             .then(res => {
-                console.log(res);
+                // console.log(res);
                 if(res.success === true){
                     Cookies.remove('user_id');
                     Cookies.remove('token');

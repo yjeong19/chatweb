@@ -3,7 +3,7 @@
 
 //localhost. dev server
 // const url = 'http://localhost:8080';
-const url = 'https://chatweb-chatweb.7e14.starter-us-west-2.openshiftapps.com';
+const url = 'https://secure-chatweb.7e14.starter-us-west-2.openshiftapps.com';
 
 
 
