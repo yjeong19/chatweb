@@ -1,5 +1,5 @@
 // const url = 'http://localhost:8080';
-const url = 'http://chatweb-chatweb.7e14.starter-us-west-2.openshiftapps.com';
+const url = 'https://chatweb-chatweb.7e14.starter-us-west-2.openshiftapps.com';
 
 export const getAllRooms = () => {
     return fetch(`${url}/room`, {

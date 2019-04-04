@@ -126,7 +126,7 @@ class Dashboard extends React.Component {
     this._onNewChat = this._onNewChat.bind(this);
 
     // this.socket = socketIO(`http://localhost:8080/`);
-    this.socket = socketIO('http://chatweb-chatweb.7e14.starter-us-west-2.openshiftapps.com/');
+    this.socket = socketIO('https://chatweb-chatweb.7e14.starter-us-west-2.openshiftapps.com/');
     // this.socket.on('message', this.onMsgReceived);
     this.socket.emit('chatList', this.props.loginReducer.username);
     this.socket.on('newChat', this._onNewChat)
